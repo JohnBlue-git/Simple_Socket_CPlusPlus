@@ -222,7 +222,7 @@ public:
 		ClientSocket(ip, port);
 	}
 	
-	~Server() {
+	~Client() {
         // Close the socket
     	closesocket(sock);
 	}
