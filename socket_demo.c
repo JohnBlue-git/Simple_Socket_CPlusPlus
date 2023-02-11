@@ -7,6 +7,8 @@ Object: A demonstration of Client and Server socket.
         In Client Class, SendMsgToServer and ReceiveMsgFromServer will be run as threads, and they will keep sending or receiving maessage from Server.
         In Server Class, ServerCommunity will become a thread, waiting to connect with Client.
         In each socket created inside ServerCommunity, SendMsgToClient and ReceiveClient will keep sending or receiving maessage from Client.
+Server: new socket >> set socket >> bind() >> listen() >> clientsocket = accept()
+Server: new socket >> set socket >> connect()
 Disclaimer:
 	Unfortunately, it has a big problem that ::accept() function cannot find the with client to communicate due to unknow issue.
 	Overall, this program is not wholely testified.
@@ -45,6 +47,7 @@ public:
 		th_s.detach();// must .detach() or .join()
 
         // pthread version ... complicated
+	// pthread also have confliction problem with wincocket.h (https://www.bilibili.com/read/cv8833392?from=search)
 		//pthread th_s;
 		//pthread_create(&th_s, NULL, Server::ServerCommunity, NULL);
 		//pthread_join(th_s, NULL);
@@ -80,28 +83,29 @@ private:
 		
 		// Bind the socket to an ip address and port
 		// sockaddr_in 網路參數struct
-        //
-        //通訊家族
-        //AF_INET：使用 IPv4
-        //AF_INET6：使用 IPv6
-        
-        //SOCK_STREAM：使用 TCP 協議
-        //SOCK_DGRAM：使用 UDP 協議
-        //
-        //IPPROTO_TCP：使用 TCP
-        //IPPROTO_UDP：使用 UDP
-        //
-        //利用IPAddress.Any方法得到本機的ＩＰ，同時聽網內/網外IP
-        //
-        //https://xyz.cinc.biz/2014/02/c-socket-server-client.html
+		//
+		// 通訊家族
+		//AF_INET：使用 IPv4
+		//AF_INET6：使用 IPv6
+
+		//SOCK_STREAM：使用 TCP 協議
+		//SOCK_DGRAM：使用 UDP 協議
+		//
+		//IPPROTO_TCP：使用 TCP
+		//IPPROTO_UDP：使用 UDP
+		//
+		// 利用IPAddress.Any方法得到本機的ＩＰ，同時聽網內/網外IP
+		//
+		// 完整設定介紹
+		//https://xyz.cinc.biz/2014/02/c-socket-server-client.html
 		sockaddr_in hint;
 		hint.sin_family = AF_INET;
 		hint.sin_port = htons(myPort);
-		hint.sin_addr.S_un.S_addr = INADDR_ANY;
+		hint.sin_addr.S_un.S_addr = INADDR_ANY;//https://www.cnblogs.com/tuyile006/p/10737066.html
 		//cout << "Server port: " << ntohs(hint.sin_port) << endl;
 
-        //::bind
-        //https://blog.csdn.net/qq_32563917/article/details/85156757?spm=1035.2023.3001.6557&utm_medium=distribute.pc_relevant_bbs_down_v2.none-task-blog-2~default~ESQUERY~Rate-4-85156757-bbs-370051845.pc_relevant_bbs_down_cate&depth_1-utm_source=distribute.pc_relevant_bbs_down_v2.none-task-blog-2~default~ESQUERY~Rate-4-85156757-bbs-370051845.pc_relevant_bbs_down_cate
+		// why ::bind ?
+		//https://blog.csdn.net/qq_32563917/article/details/85156757?spm=1035.2023.3001.6557&utm_medium=distribute.pc_relevant_bbs_down_v2.none-task-blog-2~default~ESQUERY~Rate-4-85156757-bbs-370051845.pc_relevant_bbs_down_cate&depth_1-utm_source=distribute.pc_relevant_bbs_down_v2.none-task-blog-2~default~ESQUERY~Rate-4-85156757-bbs-370051845.pc_relevant_bbs_down_cate
 		::bind(listening, (sockaddr*)&hint, sizeof(hint));
 		if (listening == SOCKET_ERROR) {
 			cerr << "Cannot bind socket! Error" << endl;
@@ -130,8 +134,8 @@ private:
 			int clientSize = sizeof(client);
 			SOCKET clientSocket = accept(listening, (sockaddr*)&client, &clientSize);// accept(): blocking function
 			if (clientSocket == INVALID_SOCKET) {
-                cout << "Cannot accept a client!" << endl;
-                closesocket(clientSocket);
+				cout << "Cannot accept a client!" << endl;
+				closesocket(clientSocket);
 			}
 
             // accepted Client info
