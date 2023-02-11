@@ -1,10 +1,15 @@
-
 /*
-
+Auther: John Blue
+Time: 2023/2
+Platform: VS2017
+Object: A demonstration of Client and Server socket.
+        In main function, Client and Server socket will be called and created.
+        In Client Class, SendMsgToServer and ReceiveMsgFromServer will be run as threads, and they will keep sending or receiving maessage from Server.
+        In Server Class, ServerCommunity will become a thread, waiting to connect with Client.
+        In each socket created inside ServerCommunity, SendMsgToClient and ReceiveClient will keep sending or receiving maessage from Client.
 Disclaimer:
-the following ... 
-, but these is a big ::accept() function cannot find the with client to communicate due to unknow issue.
-Overall, this program is not testified.
+	Unfortunately, it has a big problem that ::accept() function cannot find the with client to communicate due to unknow issue.
+	Overall, this program is not wholely testified.
 */
 
 // basic
